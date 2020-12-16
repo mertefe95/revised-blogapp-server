@@ -1,19 +1,34 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const validator = require('validator');
 
 const userSchema = new Schema({
   username: {
     type: String,
-    required: true
+    required: true,
+    validator(value) {
+      if (validator.isEmpty(value)) {
+        throw new Error('Please enter your username.')
+      }
+    }
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    validator(value) {
+      if (validator.isEmpty(value)) {
+        throw new Error('Please enter your email.')
+      }
+    }
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    validator(value) {
+      if (validator.isEmpty(value)) {
+        throw new Error('Please enter your password.')
+      }
+    }
   },
   activationKey: {
     type: String
@@ -23,11 +38,11 @@ const userSchema = new Schema({
     type: Date
     default: null
   },
-  forgoToken: {
+  forgotToken: {
     type: String,
     default: null
   },
-   {
+  {
   timestamps: true
 })
 
