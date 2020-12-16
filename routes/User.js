@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { default: validator } = require('validator');
-const { sendVerificationEmail } = require('../utils/account');
+const { sendVerificationEmail, sendActivatedEmail } = require('../utils/account');
 require('dotenv').config();
 
 
@@ -37,7 +37,7 @@ router('/:id', async (req, res) => {
     .send(user)
 })
 
-router.post('/add', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { email, password, username } = req.body
 
   const digit = /^(?=.*\d)/
@@ -78,6 +78,98 @@ router.post('/add', async (req, res) => {
     .send(user)
 })
 
+router.get('/activation/:activationKey', async (req, res) => {
+  const { activationKey } = req.params
+
+  const user = await findOne({ activationKey })
+
+  if (!activationKey) {
+    return res
+      .status(400)
+      .send({ msg: "No token found."})
+  } else if (!user) {
+    return res
+      .status(400)
+      .send({ msg: "No user not found with this token. Empty or wrong token." })
+  }
+  
+  user.activatedDateTime = Date.now()
+  sendActivatedEmail(user)
+
+  return res
+    .status(200)
+    .send({ msg: "User activated. You may proceed to log in. "})
+})
+
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = User.findOne({ email, password })
+
+  if (!validator.isEmail(email)) {
+    return res
+      .status(400)
+      .send({ msg: "Please enter a valid email format." })
+  } else if (!user) {
+    return res
+      .status(400)
+      .send({ msg: "User not found. "})
+  } else if (user.activatedDateTime === null) {
+    return res
+      .status(400)
+      .send({ msg: "Please verify your email." })
+  } 
+  
+  const comparePassword = bcrypt.compare(password, user.password)
+
+  if (!comparePassword) {
+    return res
+      .status(400)
+      .send({ msg: "Wrong or empty password"})
+  }
+
+  const token = jwt.sign({ id: user.id }, process.env.SECRET_TOKEN)
+
+  return res
+    .status(200)
+    .send({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    })
+})
+
+router.put('/change-password', async (req, req) => {
+  const { newPassword } = req.body;
+  
+  const digit = /^(?=.*\d)/
+  const upperLetter = /^(?=.*[A-Z])/
+
+  if (!newPassword) {
+    return res
+      .status(400)
+      .send({ msg: "Please enter a new password." })
+  } else if (!digit.test(newPassword)) {
+    return res
+      .status(400)
+      .send({ msg: "Please enter atleast a number with your password." })
+  } else if (!upperLetter.test(newPassword)) {
+    return res
+      .status(400)
+      .send({ msg: "Please enter at least one upper letter with your password. "})
+  } 
+
+
+})
+
+
+
+
+
 router.delete('/:id', async (req, res) => {
   const deletedUser = User.findByIdAndDelete(req.params.id)
 
@@ -91,3 +183,4 @@ router.delete('/:id', async (req, res) => {
     .status(200)
     .send(deletedUser)
 })
+
