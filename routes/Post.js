@@ -29,7 +29,7 @@ router.get('/:id', async (req, res) => {
   if (post) {
     return res
       .status(400)
-      .send({ msg: "User not found." })
+      .send({ msg: "Post not found." })
   }
 
   return res
@@ -55,7 +55,7 @@ router.post('/add', async (req, res) => {
   } else if (!validator.isEmail(email)) {
     return res
       .status(400)
-      .send({ "Please enter a valid email. "})
+      .send({ msg: "Please enter a valid email. "})
   }
 
   let salt = bcrypt.genSalt(10)
@@ -87,7 +87,7 @@ router.delete('/:id', async (req, res) => {
   if (!post) {
     return res
       .status(400)
-      .send({ msg: "User does not exists. "})
+      .send({ msg: "Post does not exists. "})
   }
 
   return res

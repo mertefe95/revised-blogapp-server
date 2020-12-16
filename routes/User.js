@@ -77,3 +77,17 @@ router.post('/add', async (req, res) => {
     .status(200)
     .send(user)
 })
+
+router.delete('/:id', async (req, res) => {
+  const deletedUser = User.findByIdAndDelete(req.params.id)
+
+  if (!deletedUser) {
+    return res
+      .status(400)
+      .send({ msg: "User not found." })
+  }
+
+  return res
+    .status(200)
+    .send(deletedUser)
+})
