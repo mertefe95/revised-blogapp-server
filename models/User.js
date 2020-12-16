@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const validator = require('validator');
+const { v4: uuidv4 } = require('uuid');
 
 const userSchema = new Schema({
   username: {
@@ -31,17 +32,17 @@ const userSchema = new Schema({
     }
   },
   activationKey: {
-    type: String
+    type: String,
     default: uuidv4
   },
   activatedDateTime: {
-    type: Date
+    type: Date,
     default: null
   },
   forgotToken: {
     type: String,
     default: null
-  },
+  }},
   {
   timestamps: true
 })
