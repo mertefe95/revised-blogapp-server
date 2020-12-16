@@ -51,6 +51,16 @@ router.put('/edit', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
+  const post = Post.findByIdAndDelete(req.params.id)
 
+  if (!post) {
+    return res
+      .status(400)
+      .send({ msg: "User does not exists. "})
+  }
+
+  return res
+    .status(200)
+    .send(post)
 })
 
