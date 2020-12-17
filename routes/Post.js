@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const post = await Post.findById(req.params.id)
 
-  if (post) {
+  if (!post) {
     return res
       .status(400)
       .send({ msg: "Post not found." })
@@ -38,60 +38,37 @@ router.get('/:id', async (req, res) => {
 
 
 router.post('/add', async (req, res) => {
-  const { email, username, password } = req.body
-  
-  const digit = /^(?=.*\d)/
-  const upperLetter = /^(?=.*[A-Z])/
+  const newPost = new Post({
+    blogTitle: req.body.blogTitle,
+    blogText: req.body.blogText,
+    authorName: req.body.authorName,
+    userId: req.body.userId
+  })
 
-  if (digit.test(password)) {
-    return res
-      .status(400)
-      .send({ msg: "Please write a password that is containing a number."})
-  } else if (upperLetter.test(password)) {
-    return res  
-      .status(400)
-      .send({ msg: "Please include at least one uppercase letter in your password. "})
-  } else if (!validator.isEmail(email)) {
-    return res
-      .status(400)
-      .send({ msg: "Please enter a valid email. "})
-  }
-
-  let salt = bcrypt.genSalt(10)
-  const hashPassword = bcrypt.hash(password, salt);
-
-  let newUser = {
-    username,
-    email,
-    hashPassword
-  }
-
-  const user = new User(newUser)
-  user.save()
-  sendVerificationEmail(user)
-
-  return res
-    .status(200)
-    .send({ msg: "User registration succesful. Please verify your email. "})
+  newPost.save()
+    .then(() => res.send({   msg: "New blog post is created." }))
+    .catch(err => res.status(400).send({ msg: err.message }))
 })
 
 
-router.put('/edit', async (req, res) => {
+router.put('/edit/:id', async (req, res) => {
 
+  Post.findOne({ _id: req.params.id, userId: req.body.userId }).then(post => {
+    post.blogTitle = req.body.blogTitle;
+    post.blogText = req.body.blogText;
+
+    post 
+        .save()
+        .then(() => res.status(200).send({msg: "The post is updated successfully."}))
+        .catch(err => res.status(400).send({ msg: "No match." }))
+  })
+  .catch(err => res.status(500).send({ msg: "Wrong Request" }))
 })
 
 router.delete('/:id', async (req, res) => {
-  const post = Post.findByIdAndDelete(req.params.id)
-
-  if (!post) {
-    return res
-      .status(400)
-      .send({ msg: "Post does not exists. "})
-  }
-
-  return res
-    .status(200)
-    .send(post)
+  Post.findByIdAndDelete(req.params.id)
+    .then(() => res.json('The POST is deleted.'))
+    .catch(err => res.status(400).json({ msg: err.message }))
 })
 
 module.exports = router;
