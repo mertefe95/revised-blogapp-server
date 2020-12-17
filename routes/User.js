@@ -4,12 +4,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { default: validator } = require('validator');
+const validator = require('validator');
 const { sendVerificationEmail, sendActivatedEmail } = require('../utils/account');
 require('dotenv').config();
 
 
-router('/', async (req, res) => {
+router.get('/', async (req, res) => {
   const users = await User.find({})
 
   if (!users) {
@@ -23,7 +23,7 @@ router('/', async (req, res) => {
     .send(users)
 })
 
-router('/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id)
 
   if (!user) {
@@ -43,39 +43,94 @@ router.post('/register', async (req, res) => {
   const digit = /^(?=.*\d)/
   const upperLetter = /^(?=.*[A-Z])/
 
-  if (!digit.test(password)) {
+  if (!digit.test(password) || !upperLetter.test(password)) {
     return res
       .status(400)
-      .send({ msg: "Please enter a password that is including at least a number. " })
-  } else if (!upperLetter.test(password)) {
+      .send({ msg: "Please enter atleast one uppercase letter and one number in the password" })
+  } else if (password.length < 8) {
     return res
       .status(400)
-      .send({ msg: "Please enter at least one uppercase letter in the password" })
-  } else if (!validator.isEmail(email)) {
+      .send({ msg: "Please enter a password that is higher than 8 characters." })
+  }
+  
+  if (!validator.isEmail(email)) {
     return res  
       .status(400)
       .send({ msg: "Please enter a valid email format." })
   }
 
-  const salt = bcrypt.genSalt(10)
+  try {
+    let userExistsByUsername = await User.findOne({ username: username })
+    let userExistsByEmail = await User.findOne({ email: email })
 
-  const hashedPassword = bcrypt.hash(password, salt)
+    if (userExistsByEmail) {
+      return res
+        .status(400)
+        .send({ msg: "User with this email address exists. Please enter a different email address." })
+    } else if (userExistsByUsername) {
+      return res
+        .status(400)
+        .send({ msg: "This username is already being used. Please enter a different username." })
+    }
 
-  let newUser = {
+    let salt = await bcrypt.genSalt(10)
+
+    let hashedPassword = await bcrypt.hash(password, salt)
+
+    let newUser = {
     username,
     email,
-    hashedPassword
-}
+    password: hashedPassword
+    }
 
   const user = new User(newUser)
-
-  user.save()
+  await user.save()
 
   sendVerificationEmail(user)
 
   return res
     .status(200)
     .send(user)
+
+
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ msg: err.message })
+  }
+})
+
+router.post('/login', async (req, res) => {
+    try {
+
+    const { email, password } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .send({ msg: "Please enter your email." })
+    } else if (!password) {
+      return res
+        .status(400)
+        .send({ msg: "Please enter your password. "})
+    } else if (!validator.isEmail(email)) {
+      return res
+        .status(400)
+        .send({ msg: "Please enter a valid email format."})
+    }
+
+    const user = findOne({ email: email })
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ msg: "User not found." })
+    } 
+  } catch (err) {
+    return res
+      .status(400)
+      .send({ msg: err.message})
+  }
 })
 
 router.get('/activation/:activationKey', async (req, res) => {
@@ -143,7 +198,7 @@ router.post('/login', async (req, res) => {
     })
 })
 
-router.put('/change-password', async (req, req) => {
+router.put('/change-password', async (req, res) => {
   const { newPassword } = req.body;
   
   const digit = /^(?=.*\d)/
@@ -184,3 +239,4 @@ router.delete('/:id', async (req, res) => {
     .send(deletedUser)
 })
 
+module.exports = router;

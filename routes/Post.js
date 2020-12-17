@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const Post = require('../models/Post');
 const { default: validator } = require('validator');
 const { sendVerificationEmail } = require('../utils/account');
 
@@ -95,3 +94,4 @@ router.delete('/:id', async (req, res) => {
     .send(post)
 })
 
+module.exports = router;
