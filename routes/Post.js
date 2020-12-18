@@ -46,7 +46,10 @@ router.post('/add', async (req, res) => {
   })
 
   newPost.save()
-    .then(() => res.send({   msg: "New blog post is created." }))
+
+  const createdAt = newPost.createdAt 
+
+    .then(() => res.send(createdAt, { msg: "New blog post is created." }))
     .catch(err => res.status(400).send({ msg: err.message }))
 })
 

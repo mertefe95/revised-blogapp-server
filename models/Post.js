@@ -38,8 +38,14 @@ const postSchema = new Schema({
         throw new Error('Please enter an userId.')
       }
     }
+  },
+  createdAt: {
+  type: String,
+  required: true,
+  default: Date.now()
   }
-}, {
+},
+ {
   timestamps: true
 })
 
