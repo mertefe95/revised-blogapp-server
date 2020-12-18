@@ -34,7 +34,7 @@ const sendActivatedEmail = (user) => {
 }
 
 const sendVerificationEmail = (user) => {
-  const url = `http://localhost:3000/${user.activationKey}`
+  const url = `http://localhost:3000/user-activated/${user.activationKey}`
 
   transport.sendMail({
     from: process.env.ADMIN_EMAIL,
