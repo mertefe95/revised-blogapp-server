@@ -7,29 +7,14 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    validator(value) {
-      if (validator.isEmpty(value)) {
-        throw new Error('Please enter your username.')
-      }
-    }
   },
   email: {
     type: String,
     required: true,
-    validator(value) {
-      if (validator.isEmpty(value)) {
-        throw new Error('Please enter your email.')
-      }
-    }
   },
   password: {
     type: String,
     required: true,
-    validator(value) {
-      if (validator.isEmpty(value)) {
-        throw new Error('Please enter your password.')
-      }
-    }
   },
   activationKey: {
     type: String,
