@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { default: validator } = require('validator');
 const { sendVerificationEmail } = require('../utils/account');
+const date = require('date-and-time');
+
 
 
 router.get('/', async (req, res) => {
@@ -38,18 +40,25 @@ router.get('/:id', async (req, res) => {
 
 
 router.post('/add', async (req, res) => {
+  const now = new Date();
+  const pattern = date.compile('MMM DD, YYYY');
+  const dateUpdate = date.format(now, pattern);  
+
+
   const newPost = new Post({
     blogTitle: req.body.blogTitle,
     blogText: req.body.blogText,
     authorName: req.body.authorName,
-    userId: req.body.userId
+    userId: req.body.userId,
+    createdAt: dateUpdate
   })
+
 
   newPost.save()
 
-  const createdAt = newPost.createdAt 
 
-    .then(() => res.send(createdAt, { msg: "New blog post is created." }))
+
+    .then(() => res.send( { msg: "New blog post is created." }))
     .catch(err => res.status(400).send({ msg: err.message }))
 })
 

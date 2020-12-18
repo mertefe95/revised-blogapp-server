@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const validator = require('validator');
+const date = new Date(2)
+
+console.log(date.getMonth)
 
 const postSchema = new Schema({
   blogTitle: {
@@ -41,7 +44,6 @@ const postSchema = new Schema({
   },
   createdAt: {
   type: String,
-  required: true,
   default: Date.now()
   }
 },
