@@ -12,7 +12,7 @@ const transport = nodemailer.createTransport(
 )
 
 const sendForgotPassword = (user, forgotT) => {
-  const url = `http://localhost:3000/change-password/${forgotT}`
+  const url = `https://revised-blogapp-client.vercel.app/change-password/${forgotT}`
 
   transport.sendMail({
     from: process.env.ADMIN_EMAIL,
@@ -23,7 +23,7 @@ const sendForgotPassword = (user, forgotT) => {
 }
 
 const sendActivatedEmail = (user) => {
-  const url = `https://localhost:3000/login`
+  const url = `https://revised-blogapp-client.vercel.app/login`
 
   transport.sendMail({
     from: process.env.EMAIL,
@@ -34,7 +34,7 @@ const sendActivatedEmail = (user) => {
 }
 
 const sendVerificationEmail = (user) => {
-  const url = `http://localhost:3000/user-activated/${user.activationKey}`
+  const url = `https://revised-blogapp-client.vercel.app/user-activated/${user.activationKey}`
 
   transport.sendMail({
     from: process.env.ADMIN_EMAIL,
