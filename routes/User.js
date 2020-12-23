@@ -32,7 +32,7 @@ router.get('/:id', async (req, res) => {
       .status(400)
       .send({ msg: "User does not exists." })
   }
-
+  
   return res
     .status(200)
     .send(user)
@@ -69,10 +69,7 @@ router.get('/activation/:activationKey', async (req, res) => {
 
   if (!user) {
       return res.status(404).send({ msg: "User not found with the activation token. "})
-  }
-
-
-  if (!user.activatedDateTime === null) {
+  } else if (!user.activatedDateTime === null) {
       return res.status(404).send({ msg: "User already activated. "})
   }
 
@@ -83,13 +80,10 @@ router.get('/activation/:activationKey', async (req, res) => {
       { activatedDateTime: dateNow, lastUpdated: dateNow }
   )
   
-  
   await sendActivatedEmail(user)
 
   return res.status(200).send({ msg: "User succesfully activated. "})
 })
-
-
 
 
 router.post('/register', async (req, res) => {
@@ -151,8 +145,8 @@ router.post('/register', async (req, res) => {
     password: hashedPassword
     }
 
-  const user = new User(newUser)
-  await user.save()
+    const user = new User(newUser)
+    await user.save()
 
   sendVerificationEmail(user)
 
@@ -259,7 +253,7 @@ router.post('/change-password', async (req, res) => {
       }
 })
 
-router.post("/forgot-password/", async (req, res) => {
+router.post("/forgot-password/:forgotToken", async (req, res) => {
   const { email } = req.body
       
   const user = await User.findOne({ email })
