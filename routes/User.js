@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const UserProfile = require('../models/UserProfile');
 const validator = require('validator');
 const { v4: uuidv4 } = require('uuid');
 const { sendVerificationEmail, sendActivatedEmail, sendForgotPassword } = require('../utils/account');
@@ -87,12 +88,12 @@ router.get('/activation/:activationKey', async (req, res) => {
 
 
 router.post('/register', async (req, res) => {
-  const { email, password, username } = req.body
+  const { email, password, username, firstname, lastname } = req.body
 
   const digit = /^(?=.*\d)/
   const upperLetter = /^(?=.*[A-Z])/
 
-  if (!username || !email || !password) {
+  if (!username || !email || !password || !firstname || !lastname) {
     return res
       .status(400)
       .send({ msg: "Please fill all the credentials." })
@@ -147,6 +148,16 @@ router.post('/register', async (req, res) => {
 
     const user = new User(newUser)
     await user.save()
+
+
+    let newUserProfile = {
+      firstname,
+      lastname,
+      _id: user.id
+    }
+
+    const userProfile = new UserProfile(newUserProfile)
+    await userProfile.save()
 
   sendVerificationEmail(user)
 
