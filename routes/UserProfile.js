@@ -32,6 +32,23 @@ router.get('/:id', async (req, res) => {
 })
 
 
+router.put('/edit/:id', async (req, res) => {
+
+  UserProfile.findOne({ _id: req.params.id }).then(userprofile => {
+    userprofile.firstname = req.body.firstname;
+    userprofile.lastname = req.body.lastname;
+    userprofile.nationality = req.body.nationality;
+    userprofile.pointOfInterests = req.body.pointOfInterests;
+
+    userprofile 
+        .save()
+        .then(() => res.status(200).send({msg: "The user profile is updated successfully."}))
+        .catch(err => res.status(400).send({ msg: "No match." }))
+  })
+  .catch(err => res.status(500).send({ msg: "Wrong Request" }))
+})
+
+
 module.exports = router;
 
 
