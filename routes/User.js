@@ -278,6 +278,10 @@ router.post("/forgot-password", async (req, res) => {
                   return res
                       .status(404)
                       .send({ msg: 'No account has been found related to that email. '})
+              } else if (user.activatedDateTime || !user.activatedDateTime === null) {
+                return res
+                  .status(400)
+                  .send({ msg: "This account is not verified, please verify your email. "})
               } else if (!user.forgotToken === null || !user.forgotToken === undefined) {
                   return res
                       .status(400)
@@ -292,7 +296,7 @@ router.post("/forgot-password", async (req, res) => {
               
               return res
                   .status(200)
-                  .send("Password change mail has been sent. Please check your email.")
+                  .send({ msg: "Password change mail has been sent. Please check your email."})
               }} catch (err) {
               return res
                   .status(500)
