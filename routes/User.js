@@ -278,7 +278,7 @@ router.post("/forgot-password", async (req, res) => {
                   return res
                       .status(404)
                       .send({ msg: 'No account has been found related to that email. '})
-              } else if (user.activatedDateTime || !user.activatedDateTime === null) {
+              } else if (!user.activatedDateTime || user.activatedDateTime === null) {
                 return res
                   .status(400)
                   .send({ msg: "This account is not verified, please verify your email. "})
