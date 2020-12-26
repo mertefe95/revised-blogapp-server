@@ -264,7 +264,7 @@ router.post('/change-password', async (req, res) => {
       }
 })
 
-router.post("/forgot-password/:forgotToken", async (req, res) => {
+router.post("/forgot-password", async (req, res) => {
   const { email } = req.body
       
   const user = await User.findOne({ email })
@@ -289,12 +289,10 @@ router.post("/forgot-password/:forgotToken", async (req, res) => {
                   await user.updateOne({ forgotToken: forgotT })
       
                   await sendForgotPassword(user, forgotT)
-
-
               
               return res
                   .status(200)
-                  .send("Password change mail has been sent.")
+                  .send("Password change mail has been sent. Please check your email.")
               }} catch (err) {
               return res
                   .status(500)
