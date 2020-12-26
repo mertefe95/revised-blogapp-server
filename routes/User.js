@@ -163,7 +163,7 @@ router.post('/register', async (req, res) => {
 
   return res
     .status(200)
-    .send('Successful registration. Please verify your email. ')
+    .send({ msg: 'Successful registration. Please verify your email.' })
 
 
   } catch (err) {
