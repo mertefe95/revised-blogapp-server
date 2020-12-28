@@ -33,6 +33,15 @@ const postSchema = new Schema({
       }
     }
   },
+  category: {
+    type: String,
+    required: true,
+    validator (value) {
+      if (validator.isEmpty(value)) {
+        throw new Error('Please choose your category.')
+      }
+    }
+  },
   userId: {
     type: String,
     required: true,
