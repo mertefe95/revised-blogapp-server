@@ -39,6 +39,11 @@ router.get('/:id', async (req, res) => {
     .send(user)
 })
 
+
+
+
+
+
 router.get('/forgot-password/:forgotToken', async (req, res) => {
   const {forgotToken} = req.params
   
