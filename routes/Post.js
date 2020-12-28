@@ -39,6 +39,24 @@ router.get('/:id', async (req, res) => {
 })
 
 
+router.get('/category/:name', async (req, res) => {
+  const posts = await Post.find({ category: req.params.name })
+  
+  if (!posts) {
+    return res
+      .status(400)
+      .send({ msg: "Posts don't exist." })
+  }
+
+  return res
+    .status(200)
+    .send(posts)
+
+})
+
+
+
+
 router.post('/add', async (req, res) => {
   const now = new Date();
   const pattern = date.compile('MMM DD, YYYY');
@@ -49,8 +67,8 @@ router.post('/add', async (req, res) => {
     blogTitle: req.body.blogTitle,
     blogText: req.body.blogText,
     authorName: req.body.authorName,
-    userId: req.body.userId,
     category: req.body.category,
+    userId: req.body.userId,
     createdAt: dateUpdate
   })
 
