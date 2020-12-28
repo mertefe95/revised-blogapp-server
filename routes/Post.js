@@ -50,6 +50,7 @@ router.post('/add', async (req, res) => {
     blogText: req.body.blogText,
     authorName: req.body.authorName,
     userId: req.body.userId,
+    category: req.body.category,
     createdAt: dateUpdate
   })
 
