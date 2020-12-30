@@ -54,9 +54,6 @@ router.get('/category/:name', async (req, res) => {
 
 })
 
-
-
-
 router.post('/add', async (req, res) => {
   const now = new Date();
   const pattern = date.compile('MMM DD, YYYY');
@@ -70,11 +67,9 @@ router.post('/add', async (req, res) => {
     category: req.body.category,
     userId: req.body.userId,
     createdAt: dateUpdate
-  })
-
+});
 
   newPost.save()
-
 
 
     .then(() => res.send( { msg: "New blog post is created." }))
